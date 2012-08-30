@@ -17,7 +17,7 @@ Getting started
 
 When the virtual machine has booted, you can access the Solr admin interface at the following URL:
 
-    solr.33.33.33.20.xip.io
+    http://solr.33.33.33.20.xip.io/
 
 
 Author

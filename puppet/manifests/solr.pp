@@ -21,17 +21,30 @@ class solr::install {
     ensure => present,
   }
 
+  # grab schema.xml and solrconfig.xml from the search_api_solr module
+
+  exec { 'solr-download-search-api-module':
+    command => 'wget http://ftp.drupal.org/files/projects/search_api_solr-7.x-1.0-rc2.tar.gz && tar xzf search_api_solr-7.x-1.0-rc2.tar.gz',
+    cwd     => '/root',
+    creates => '/root/search_api_solr',
+  }
+
+  file { '/etc/solr/conf/schema.xml':
+    source => 'file:///root/search_api_solr/schema.xml',
+  }
+
+  file { '/etc/solr/conf/solrconfig.xml':
+    source => 'file:///root/search_api_solr/solrconfig.xml',
+  }
+
   # install apache and add a proxy for solr
 
   class { 'apache': }
   class { 'apache::mod::proxy': }
 
-  apache::mod { 'php5': }
-  apache::mod { 'rewrite': }
-
-  apache::vhost::proxy { 'jenkins.33.33.33.10.xip.io':
+  apache::vhost::proxy { 'solr.33.33.33.20.xip.io':
     port => '80',
-    dest => 'http://localhost:8080',
+    dest => 'http://localhost:8080/solr/admin/',
   }
 }
 
