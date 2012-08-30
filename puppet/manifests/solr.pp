@@ -30,11 +30,13 @@ class solr::install {
   }
 
   file { '/etc/solr/conf/schema.xml':
-    source => 'file:///root/search_api_solr/schema.xml',
+    source  => 'file:///root/search_api_solr/schema.xml',
+    require => Exec['solr-download-search-api-module'],
   }
 
   file { '/etc/solr/conf/solrconfig.xml':
-    source => 'file:///root/search_api_solr/solrconfig.xml',
+    source  => 'file:///root/search_api_solr/solrconfig.xml',
+    require => Exec['solr-download-search-api-module'],
   }
 
   # install apache and add a proxy for solr
