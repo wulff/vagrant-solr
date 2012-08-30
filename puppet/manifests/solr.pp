@@ -46,7 +46,7 @@ class solr::install {
 
   apache::vhost::proxy { 'solr.33.33.33.20.xip.io':
     port => '80',
-    dest => 'http://localhost:8080/solr/admin/',
+    dest => 'http://localhost:8080/solr/',
   }
 }
 
