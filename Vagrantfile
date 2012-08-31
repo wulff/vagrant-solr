@@ -1,19 +1,3 @@
-require 'optparse'
-
-facter = {}
-
-opt_parser = OptionParser.new do |opts|
-  opts.banner = 'Usage: vagrant up [--searchapi|--apachesolr]'
-
-  opts.on('--searchapi') do
-    facter = {'drupalsolrmodule' => 'search_api'}
-  end
-
-  opts.on('--apachesolr') do
-    facter = {'drupalsolrmodule' => 'apachesolr'}
-  end
-end.parse!
-
 Vagrant::Config.run do |config|
   config.vm.host_name = 'solr'
 
@@ -27,10 +11,22 @@ Vagrant::Config.run do |config|
   config.vm.network :hostonly, '33.33.33.20', {:adapter => 2}
 
   # use puppet to provision packages
-  config.vm.provision :puppet do |puppet|
-    puppet.manifests_path = 'puppet/manifests'
-    puppet.manifest_file = 'solr.pp'
-    puppet.module_path = 'puppet/modules'
-    puppet.facter = facter
+
+  config.vm.define :searchapi, {:primary => true} do |searchapi|
+    searchapi.vm.provision :puppet do |puppet|
+      puppet.manifests_path = 'puppet/manifests'
+      puppet.manifest_file = 'solr.pp'
+      puppet.module_path = 'puppet/modules'
+      puppet.facter = {'drupalsolrmodule' => 'search_api'}
+    end
+  end
+
+  config.vm.define :apachesolr do |apachesolr|
+    apachesolr.vm.provision :puppet do |puppet|
+      puppet.manifests_path = 'puppet/manifests'
+      puppet.manifest_file = 'solr.pp'
+      puppet.module_path = 'puppet/modules'
+      puppet.facter = {'drupalsolrmodule' => 'apachesolr'}
+    end
   end
 end
