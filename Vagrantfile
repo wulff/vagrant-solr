@@ -10,7 +10,8 @@ Vagrant::Config.run do |config|
   # attach network adapters
   config.vm.network :hostonly, '33.33.33.20', {:adapter => 2}
 
-  # use puppet to provision packages
+  # use puppet to provision packages, set a fact to indicate which contrib
+  # module to support
 
   config.vm.define :searchapi, {:primary => true} do |searchapi|
     searchapi.vm.provision :puppet do |puppet|

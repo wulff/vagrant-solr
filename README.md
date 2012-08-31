@@ -9,7 +9,7 @@ Installation
 
 1. Download and install Vagrant: http://vagrantup.com/
 2. Clone this repository using the `--recursive` flag (to get the submodules).
-3. Go to the root of the repository and run `vagrant up searchapi`. Building the virtual machine takes only a couple of minutes.
+3. Go to the root of the repository and run `vagrant up searchapi`. Building the virtual machine usually only takes around five minutes.
 
 
 Getting started

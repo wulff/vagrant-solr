@@ -9,9 +9,9 @@ stage { 'bootstrap': before => Stage['main'] }
 
 class solr::bootstrap {
   # we need an updated list of sources before we can apply the configuration
-	exec { 'solr_apt_update':
-		command => '/usr/bin/apt-get update',
-	}
+  exec { 'solr_apt_update':
+    command => '/usr/bin/apt-get update',
+  }
 }
 
 class solr::install {
@@ -21,45 +21,41 @@ class solr::install {
     ensure => present,
   }
 
-  # grab schema.xml and solrconfig.xml from the search_api_solr module
+  # grab schema.xml and solrconfig.xml from the selected drupal contrib module
 
   if $drupalsolrmodule == 'apachesolr' {
-    exec { 'solr-download-apachesolr-module':
+    exec { 'solr-download-drupal-module':
       command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.0-rc3.tar.gz && tar xzf apachesolr-7.x-1.0-rc3.tar.gz',
       cwd     => '/root',
       creates => '/root/apachesolr',
     }
 
-    file { '/etc/solr/conf/schema.xml':
-      source  => 'file:///root/apachesolr/solr-conf/schema.xml',
-      require => Exec['solr-download-apachesolr-module'],
-    }
-
-    file { '/etc/solr/conf/solrconfig.xml':
-      source  => 'file:///root/apachesolr/solr-conf/solrconfig.xml',
-      require => Exec['solr-download-apachesolr-module'],
-    }
+    $solr_schema_source = 'file:///root/apachesolr/solr-conf/schema.xml'
+    $solr_config_source = 'file:///root/apachesolr/solr-conf/solrconfig.xml'
 
     file { '/etc/solr/conf/protwords.txt':
       source  => 'file:///root/apachesolr/solr-conf/protwords.txt',
-      require => Exec['solr-download-apachesolr-module'],
+      require => Exec['solr-download-drupal-module'],
     }
   } else {
-    exec { 'solr-download-search-api-module':
+    exec { 'solr-download-drupal-module':
       command => 'wget http://ftp.drupal.org/files/projects/search_api_solr-7.x-1.0-rc2.tar.gz && tar xzf search_api_solr-7.x-1.0-rc2.tar.gz',
       cwd     => '/root',
       creates => '/root/search_api_solr',
     }
 
-    file { '/etc/solr/conf/schema.xml':
-      source  => 'file:///root/search_api_solr/schema.xml',
-      require => Exec['solr-download-search-api-module'],
-    }
+    $solr_schema_source = 'file:///root/search_api_solr/schema.xml'
+    $solr_config_source = 'file:///root/search_api_solr/solrconfig.xml'
+  }
 
-    file { '/etc/solr/conf/solrconfig.xml':
-      source  => 'file:///root/search_api_solr/solrconfig.xml',
-      require => Exec['solr-download-search-api-module'],
-    }
+  file { '/etc/solr/conf/schema.xml':
+    source  => $solr_schema_source,
+    require => Exec['solr-download-drupal-module'],
+  }
+
+  file { '/etc/solr/conf/solrconfig.xml':
+    source  => $solr_config_source,
+    require => Exec['solr-download-drupal-module'],
   }
 
   # install apache and add a proxy for solr
