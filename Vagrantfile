@@ -1,3 +1,19 @@
+require 'optparse'
+
+facter = {}
+
+opt_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: vagrant up [--searchapi|--apachesolr]'
+
+  opts.on('--searchapi') do
+    facter = {'drupalsolrmodule' => 'search_api'}
+  end
+
+  opts.on('--apachesolr') do
+    facter = {'drupalsolrmodule' => 'apachesolr'}
+  end
+end.parse!
+
 Vagrant::Config.run do |config|
   config.vm.host_name = 'solr'
 
@@ -15,5 +31,6 @@ Vagrant::Config.run do |config|
     puppet.manifests_path = 'puppet/manifests'
     puppet.manifest_file = 'solr.pp'
     puppet.module_path = 'puppet/modules'
+    puppet.facter = facter
   end
 end

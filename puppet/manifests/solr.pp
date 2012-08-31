@@ -23,20 +23,43 @@ class solr::install {
 
   # grab schema.xml and solrconfig.xml from the search_api_solr module
 
-  exec { 'solr-download-search-api-module':
-    command => 'wget http://ftp.drupal.org/files/projects/search_api_solr-7.x-1.0-rc2.tar.gz && tar xzf search_api_solr-7.x-1.0-rc2.tar.gz',
-    cwd     => '/root',
-    creates => '/root/search_api_solr',
-  }
+  if $drupalsolrmodule == 'apachesolr' {
+    exec { 'solr-download-apachesolr-module':
+      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.0-rc3.tar.gz && tar xzf apachesolr-7.x-1.0-rc3.tar.gz',
+      cwd     => '/root',
+      creates => '/root/apachesolr',
+    }
 
-  file { '/etc/solr/conf/schema.xml':
-    source  => 'file:///root/search_api_solr/schema.xml',
-    require => Exec['solr-download-search-api-module'],
-  }
+    file { '/etc/solr/conf/schema.xml':
+      source  => 'file:///root/apachesolr/solr-conf/schema.xml',
+      require => Exec['solr-download-apachesolr-module'],
+    }
 
-  file { '/etc/solr/conf/solrconfig.xml':
-    source  => 'file:///root/search_api_solr/solrconfig.xml',
-    require => Exec['solr-download-search-api-module'],
+    file { '/etc/solr/conf/solrconfig.xml':
+      source  => 'file:///root/apachesolr/solr-conf/solrconfig.xml',
+      require => Exec['solr-download-apachesolr-module'],
+    }
+
+    file { '/etc/solr/conf/protwords.txt':
+      source  => 'file:///root/apachesolr/solr-conf/protwords.txt',
+      require => Exec['solr-download-apachesolr-module'],
+    }
+  } else {
+    exec { 'solr-download-search-api-module':
+      command => 'wget http://ftp.drupal.org/files/projects/search_api_solr-7.x-1.0-rc2.tar.gz && tar xzf search_api_solr-7.x-1.0-rc2.tar.gz',
+      cwd     => '/root',
+      creates => '/root/search_api_solr',
+    }
+
+    file { '/etc/solr/conf/schema.xml':
+      source  => 'file:///root/search_api_solr/schema.xml',
+      require => Exec['solr-download-search-api-module'],
+    }
+
+    file { '/etc/solr/conf/solrconfig.xml':
+      source  => 'file:///root/search_api_solr/solrconfig.xml',
+      require => Exec['solr-download-search-api-module'],
+    }
   }
 
   # install apache and add a proxy for solr
