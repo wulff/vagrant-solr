@@ -9,7 +9,7 @@ Installation
 
 1. Download and install Vagrant: http://vagrantup.com/
 2. Clone this repository using the `--recursive` flag (to get the submodules).
-3. Go to the root of the repository and run `vagrant up`. Building the virtual machine takes only a couple of minutes.
+3. Go to the root of the repository and run `vagrant up searchapi`. Building the virtual machine takes only a couple of minutes.
 
 
 Getting started
@@ -17,13 +17,19 @@ Getting started
 
 When starting the virtual machine you can choose whether you want it to support the *Search API Solr search* module or the *Apache Solr Search Integration* module by starting either the `searchapi` or  the `apachesolr` virtual machine.
 
+### Search API Solr search
+
 To start the virtual machine with support for the `search_api_solr` module:
 
     vagrant up searchapi
 
+### Apache Solr Search Integration
+
 To start the virtual machine with support for the `apachesolr` module:
 
     vagrant up apachesolr
+
+### Common settings
 
 When the virtual machine has booted, you can access the Solr admin interface at the following URL:
 
