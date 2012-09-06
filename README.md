@@ -40,10 +40,3 @@ When you add the Solr server on the Search API admin page, use the following set
     Solr host: solr.33.33.33.20.xip.io
     Solr port: 80
     Solr path: /
-
-
-Author
-------
-
-Morten Wulff  
-<wulff@ratatosk.net>
