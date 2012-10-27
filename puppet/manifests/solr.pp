@@ -21,11 +21,16 @@ class solr::install {
     ensure => present,
   }
 
+  service { 'tomcat6':
+    ensure  => running,
+    require => Package['solr-tomcat'],
+  }
+
   # grab schema.xml and solrconfig.xml from the selected drupal contrib module
 
   if $drupalsolrmodule == 'apachesolr' {
     exec { 'solr-download-drupal-module':
-      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.0-rc3.tar.gz && tar xzf apachesolr-7.x-1.0-rc3.tar.gz',
+      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.1.tar.gz && tar xzf apachesolr-7.x-1.1.tar.gz',
       cwd     => '/root',
       creates => '/root/apachesolr',
     }
@@ -51,11 +56,21 @@ class solr::install {
   file { '/etc/solr/conf/schema.xml':
     source  => $solr_schema_source,
     require => Exec['solr-download-drupal-module'],
+    notify  => Service['tomcat6'],
   }
 
   file { '/etc/solr/conf/solrconfig.xml':
     source  => $solr_config_source,
     require => Exec['solr-download-drupal-module'],
+    notify  => Service['tomcat6'],
+  }
+
+  file { '/usr/share/solr/data':
+    ensure  => directory,
+    owner   => 'tomcat6',
+    group   => 'tomcat6',
+    mode    => 0755,
+    require => Package['solr-tomcat'],
   }
 
   # install apache and add a proxy for solr
