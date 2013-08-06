@@ -26,31 +26,39 @@ class solr::install {
     require => Package['solr-tomcat'],
   }
 
+  # install drush to download drupal modules
+
+  package { 'drush':
+    ensure => installed,
+  }
+
   # grab schema.xml and solrconfig.xml from the selected drupal contrib module
 
   if $drupalsolrmodule == 'apachesolr' {
     exec { 'solr-download-drupal-module':
-      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.1.tar.gz && tar xzf apachesolr-7.x-1.1.tar.gz',
+      command => 'drush dl --destination=. apachesolr',
       cwd     => '/root',
       creates => '/root/apachesolr',
+      require => Package['drush'],
     }
 
-    $solr_schema_source = 'file:///root/apachesolr/solr-conf/schema.xml'
-    $solr_config_source = 'file:///root/apachesolr/solr-conf/solrconfig.xml'
+    $solr_schema_source = 'file:///root/apachesolr/solr-conf/solr-1.4/schema.xml'
+    $solr_config_source = 'file:///root/apachesolr/solr-conf/solr-1.4/solrconfig.xml'
 
     file { '/etc/solr/conf/protwords.txt':
-      source  => 'file:///root/apachesolr/solr-conf/protwords.txt',
+      source  => 'file:///root/apachesolr/solr-conf/solr-1.4/protwords.txt',
       require => Exec['solr-download-drupal-module'],
     }
   } else {
     exec { 'solr-download-drupal-module':
-      command => 'wget http://ftp.drupal.org/files/projects/search_api_solr-7.x-1.0-rc2.tar.gz && tar xzf search_api_solr-7.x-1.0-rc2.tar.gz',
+      command => 'drush dl --destination=. search_api_solr',
       cwd     => '/root',
       creates => '/root/search_api_solr',
+      require => Package['drush'],
     }
 
-    $solr_schema_source = 'file:///root/search_api_solr/schema.xml'
-    $solr_config_source = 'file:///root/search_api_solr/solrconfig.xml'
+    $solr_schema_source = 'file:///root/search_api_solr/solr-conf/1.4/schema.xml'
+    $solr_config_source = 'file:///root/search_api_solr/solr-conf/1.4/solrconfig.xml'
   }
 
   file { '/etc/solr/conf/schema.xml':
