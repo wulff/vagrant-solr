@@ -30,16 +30,16 @@ class solr::install {
 
   if $drupalsolrmodule == 'apachesolr' {
     exec { 'solr-download-drupal-module':
-      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.1.tar.gz && tar xzf apachesolr-7.x-1.1.tar.gz',
+      command => 'wget http://ftp.drupal.org/files/projects/apachesolr-7.x-1.4.tar.gz && tar xzf apachesolr-7.x-1.4.tar.gz',
       cwd     => '/root',
       creates => '/root/apachesolr',
     }
 
-    $solr_schema_source = 'file:///root/apachesolr/solr-conf/schema.xml'
-    $solr_config_source = 'file:///root/apachesolr/solr-conf/solrconfig.xml'
+    $solr_schema_source = 'file:///root/apachesolr/solr-conf/solr-1.4/schema.xml'
+    $solr_config_source = 'file:///root/apachesolr/solr-conf/solr-1.4/solrconfig.xml'
 
     file { '/etc/solr/conf/protwords.txt':
-      source  => 'file:///root/apachesolr/solr-conf/protwords.txt',
+      source  => 'file:///root/apachesolr/solr-conf/solr-1.4/protwords.txt',
       require => Exec['solr-download-drupal-module'],
     }
   } else {
